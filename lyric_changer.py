@@ -1,18 +1,40 @@
+import os
 import re
+from random import randint
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
+import io
+
+try:
+  from pathlib import Path
+except ImportError:
+  from pathlib2 import Path  # python 2 backport
 
 
 def main():
-    artist_name = 'eminem'
-    directory = artist_name + '/'
-    text_file = directory + 'raw.txt'
-    paragraphs = create_paragraphs(text_file)
-    refined_paragraphs = refine_paragraphs(paragraphs)
-    print paragraphs[5]
+    artists_names = ['eminem',
+                   'aesop_rock',
+                   'dre',
+                   'kendrick_lamar',
+                   'j_cole',
+                   'kanye',
+                   'rakim',
+                   'nas',]
+    directory = 'bars/'
+    shuffling = 1000
+    file = create_files(directory)
+    for artist in artists_names:
+        artist = artist + '/'
+        text_file = artist + 'raw.txt'
+        paragraphs = create_paragraphs(text_file)
+        refined_paragraphs = refine_paragraphs(paragraphs)
+        output = mutate_data(refined_paragraphs, shuffling)
+        write_paragraphs_to_file(output, file)
 
 
 def create_paragraphs(filename):
     my_file = open(filename, 'r')
-    paragraph_count = 0
     paragraphs = []
     new_paragraph = []
     for line in my_file.readlines():
@@ -25,8 +47,54 @@ def create_paragraphs(filename):
                 new_paragraph = []
     return paragraphs
 
+
 def refine_paragraphs(paragraphs):
-    print 'nice'
+    bar_paragraphs = []
+    new_paragraph = []
+    for paragraph in paragraphs:
+        if len(paragraph) % 4 == 0:
+            large_paragraph = []
+            for line in paragraph:
+                large_paragraph.append(line)
+            number_of_bars = len(large_paragraph)/4
+            for i in range(number_of_bars):
+                new_paragraph.append(large_paragraph[0 + i])
+                new_paragraph.append(large_paragraph[1 + i])
+                new_paragraph.append(large_paragraph[2 + i])
+                new_paragraph.append(large_paragraph[3 + i])
+                bar_paragraphs.append(new_paragraph)
+                new_paragraph = []
+    return bar_paragraphs
+
+
+def write_paragraphs_to_file(output, file):
+    newline = '\n'
+    for paragraph in output:
+        for line in paragraph:
+            print line
+            l = line + newline;
+            file.writelines(unicode(l))
+        file.write(unicode(newline))
+
+
+def create_files(directory):
+    path = Path(directory)
+    if path.exists() != True:
+        Path(directory).mkdir()
+    output_file_name = directory + 'raw.txt'
+    output_file = io.open(output_file_name, 'w', encoding='utf8')
+    return output_file
+
+def mutate_data(my_input, steps):
+    input_range = len(my_input) - 1
+    for i in range(steps):
+        first_index = randint(0, input_range)
+        second_index = randint(0, input_range)
+        if first_index != second_index:
+            temp = my_input[first_index]
+            my_input[first_index] = my_input[second_index]
+            my_input[second_index] = temp
+    return my_input
 
 
 
