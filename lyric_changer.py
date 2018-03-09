@@ -20,17 +20,21 @@ def main():
                    'j_cole',
                    'kanye',
                    'rakim',
-                   'nas',]
+                   'nas']
     directory = 'bars/'
-    shuffling = 1000
+    shuffling = 100000
+    number_of_paragraphs = 0
     file = create_files(directory)
     for artist in artists_names:
         artist = artist + '/'
         text_file = artist + 'raw.txt'
         paragraphs = create_paragraphs(text_file)
+        number_of_paragraphs += len(paragraphs)
         refined_paragraphs = refine_paragraphs(paragraphs)
         output = mutate_data(refined_paragraphs, shuffling)
         write_paragraphs_to_file(output, file)
+    print '\nCreated a total of ' + str(number_of_paragraphs) + ' bars'
+    print 'Thats a total of ' + str(number_of_paragraphs*4) + ' lines'
 
 
 def create_paragraphs(filename):
@@ -71,7 +75,6 @@ def write_paragraphs_to_file(output, file):
     newline = '\n'
     for paragraph in output:
         for line in paragraph:
-            print line
             l = line + newline;
             file.writelines(unicode(l))
         file.write(unicode(newline))
