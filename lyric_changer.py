@@ -26,11 +26,11 @@ def main():
     number_of_paragraphs = 0
     file = create_files(directory)
     for artist in artists_names:
-        artist = artist + '/'
+        artist += '/'
         text_file = artist + 'raw.txt'
         paragraphs = create_paragraphs(text_file)
-        number_of_paragraphs += len(paragraphs)
         refined_paragraphs = refine_paragraphs(paragraphs)
+        number_of_paragraphs += len(refined_paragraphs)
         output = mutate_data(refined_paragraphs, shuffling)
         write_paragraphs_to_file(output, file)
     print '\nCreated a total of ' + str(number_of_paragraphs) + ' bars'
@@ -82,11 +82,12 @@ def write_paragraphs_to_file(output, file):
 
 def create_files(directory):
     path = Path(directory)
-    if path.exists() != True:
+    if not path.exists():
         Path(directory).mkdir()
     output_file_name = directory + 'raw.txt'
     output_file = io.open(output_file_name, 'w', encoding='utf8')
     return output_file
+
 
 def mutate_data(my_input, steps):
     input_range = len(my_input) - 1
@@ -98,7 +99,6 @@ def mutate_data(my_input, steps):
             my_input[first_index] = my_input[second_index]
             my_input[second_index] = temp
     return my_input
-
 
 
 def valid_line(line):
